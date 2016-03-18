@@ -1,11 +1,13 @@
 package imagemagician;
 
+import imagemagician.constants.ImageType;
+import imagemagician.dto.MagicianMaterial;
+import imagemagician.spell.ConvertSpell;
+import imagemagician.spell.MagicianSpell;
 import org.junit.*;
 import junit.framework.JUnit4TestAdapter;
 
 import java.io.*;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author adorechic
@@ -27,18 +29,16 @@ public class MagicianTest {
 	public void PNG変換テスト() throws IOException{
 		byte[] src = read(getFullPath("/test01.png"));
 
-		ConvertCommand command =
-				new ResizeCommand()
-				.src(src,ImageType.PNG)
+		MagicianSpell spell = ConvertSpell.newSpell(src, ImageType.PNG)
 				.resize(400)
 				.colorSpace("RGB")
 				.autoOrient()
-				.strip()
-				.build();
+				.strip();
 
-		Magician magician = new Magician();
-		MagickFuture future = magician.convert(command);
-		future.get();
+		MagicianMaterial material = new MagicianMaterial();
+		Magician magician = Magician.newMagician(material);
+		MagicianFuture future = magician.setup(spell).cast();
+		future.result();
 	}
 
 	@Test
@@ -46,18 +46,16 @@ public class MagicianTest {
 
 		byte[] src = read(getFullPath("/test02.gif"));
 
-		ConvertCommand command =
-				new ResizeCommand()
-				.src(src,ImageType.GIF)
+		MagicianSpell spell = ConvertSpell.newSpell(src, ImageType.GIF)
 				.resize(200)
 				.colorSpace("RGB")
 				.autoOrient()
-				.strip()
-				.build();
+				.strip();
 
-		Magician magician = new Magician();
-		MagickFuture future = magician.convert(command);
-		future.get();
+		MagicianMaterial material = new MagicianMaterial();
+		Magician magician = Magician.newMagician(material);
+		MagicianFuture future = magician.setup(spell).cast();
+		future.result();
 	}
 
 	@Test
@@ -65,18 +63,16 @@ public class MagicianTest {
 
 		byte[] src = read(getFullPath("/test03.jpg"));
 
-		ConvertCommand command =
-				new ResizeCommand()
-				.src(src,ImageType.JPG)
+		MagicianSpell spell = ConvertSpell.newSpell(src, ImageType.JPG)
 				.resize(200)
 				.colorSpace("RGB")
 				.autoOrient()
-				.strip()
-				.build();
+				.strip();
 
-		Magician magician = new Magician();
-		MagickFuture future = magician.convert(command);
-		future.get();
+		MagicianMaterial material = new MagicianMaterial();
+		Magician magician = Magician.newMagician(material);
+		MagicianFuture future = magician.setup(spell).cast();
+		future.result();
 	}
 
 	private void write(byte[] data, String path) throws IOException {
@@ -94,25 +90,15 @@ public class MagicianTest {
 	}
 
 	private byte[] read(String path) throws IOException {
-		FileInputStream fis = null;
-		ByteArrayOutputStream b = null;
-		BufferedOutputStream bos = null;
-		try {
-			fis = new FileInputStream(path);
-			b = new ByteArrayOutputStream();
-			bos = new BufferedOutputStream(b);
-
+		try (FileInputStream fis = new FileInputStream(path);
+			 ByteArrayOutputStream ba = new ByteArrayOutputStream();
+			 BufferedOutputStream bo = new BufferedOutputStream(ba)) {
 			int c;
-			while ((c = fis.read()) != -1){
-				bos.write(c);
+			while ((c = fis.read()) != -1) {
+				bo.write(c);
 			}
-			bos.flush();
-			return b.toByteArray();
-		} finally {
-			if(fis != null) fis.close();
-			if(bos != null) bos.close();
-			if(b != null) b.close();
+			bo.flush();
+			return ba.toByteArray();
 		}
-
 	}
 }
