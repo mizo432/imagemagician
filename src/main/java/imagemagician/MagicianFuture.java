@@ -5,10 +5,10 @@ package imagemagician;
  * @author adorechic
  */
 public interface MagicianFuture {
-	/**
-	 * 変換処理が終了するまで待機し、変換された画像を返します。
-	 * @throws MagicianException
-	 * @return
-	 */
-	byte[] result();
+    /**
+     * 変換処理が終了するまで待機し、変換された画像を返します。
+     * @throws MagicianException
+     * @return
+     */
+    byte[] result();
 }
